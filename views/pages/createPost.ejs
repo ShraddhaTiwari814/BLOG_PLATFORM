@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Post</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<%- include('../partials/navbar') %>
+
+<div class="container">
+  <h2>Create Post</h2>
+
+  <form id="postForm">
+    <input type="text" id="title" placeholder="Enter title" required>
+
+    <textarea id="content" placeholder="Enter content"></textarea>
+
+    <button type="submit">Create Post</button>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById("postForm");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById("title").value;
+    const content = document.getElementById("content").value;
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Please login first");
+      window.location.href = "/";
+      return;
+    }
+
+    const response = await fetch("/api/posts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        title,
+        content
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Post Created Successfully");
+      window.location.href = "/dashboard";
+    } else {
+      alert(data.message);
+    }
+  });
+</script>
+
+</body>
+</html>

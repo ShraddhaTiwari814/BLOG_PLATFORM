@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Single Post</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<%- include('../partials/navbar') %>
+
+<div id="singlePost"></div>
+
+<script>
+  const postId = "<%= postId %>";
+
+  async function loadPost() {
+    const response = await fetch(`/api/posts/${postId}`);
+    const post = await response.json();
+
+    document.getElementById("singlePost").innerHTML = `
+      <div class="post">
+        <h2>${post.title}</h2>
+
+        <textarea id="content">${post.content}</textarea>
+
+        <br><br>
+
+        <button id="updateBtn">Update</button>
+        <button id="deleteBtn">Delete</button>
+      </div>
+    `;
+
+    document.getElementById("updateBtn").addEventListener("click", updatePost);
+    document.getElementById("deleteBtn").addEventListener("click", deletePost);
+  }
+
+  async function updatePost() {
+    const token = localStorage.getItem("token");
+
+    const content = document.getElementById("content").value;
+
+    const response = await fetch(`/api/posts/${postId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        content: content
+      })
+    });
+
+    const data = await response.json();
+
+    alert(data.message || "Post Updated");
+  }
+
+  async function deletePost() {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`/api/posts/${postId}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    alert(data.message);
+
+    if (response.ok) {
+      window.location.href = "/dashboard";
+    }
+  }
+
+  loadPost();
+</script>
+
+</body>
+</html>

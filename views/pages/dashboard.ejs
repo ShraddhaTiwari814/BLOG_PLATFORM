@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<%- include('../partials/navbar') %>
+
+<h2>All Blog Posts</h2>
+
+<div id="posts"></div>
+
+<script>
+  async function loadPosts() {
+    try {
+      const response = await fetch("/api/posts");
+
+      const posts = await response.json();
+
+      const postsContainer = document.getElementById("posts");
+
+      postsContainer.innerHTML = "";
+
+      posts.forEach((post) => {
+        postsContainer.innerHTML += `
+          <div class="post">
+            <h3>${post.title}</h3>
+            <p>${post.content}</p>
+            <p><strong>Author:</strong> ${post.author.name}</p>
+            <a href="/post/${post._id}">Read More</a>
+          </div>
+        `;
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  loadPosts();
+</script>
+
+</body>
+</html>
